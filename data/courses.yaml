@@ -1,0 +1,174 @@
+# 开源课程：广州开放大学人工智能技术应用专业。no = 人才培养方案中的课程序号
+# group: gen 通识课（不在专业培养方案内，inPlan: false）/ base 专业基础课 / core 专业核心课 / ext 专业拓展课；序号按《人才培养方案（非脱产）2026 备案》；status: online 已上线 / building 建设中
+# res 只填网站上确实有的：book 文字教材, ppt 授课PPT, anim 交互动画, quiz 测试习题, lab 实验
+- id: ai-literacy
+  no: 1
+  inPlan: false
+  name: 人工智能通识教程
+  group: gen
+  status: online
+  url: https://mingzifu9.github.io/ai-literacy/
+  repo: https://github.com/MingziFu9/ai-literacy
+  chapters: 8
+  blurb: 面向全体专科、本科学生，与东南大学出版社 2026 年版纸质教材配套，从机器学习、语言与视觉智能讲到智能体、AI+X、安全与伦理。
+  res: [book, anim, quiz, lab]
+- id: python
+  no: 11
+  name: Python 编程
+  group: base
+  status: online
+  url: https://mingzifu9.github.io/python-programming/
+  repo: https://github.com/MingziFu9/python-programming
+  chapters: 12
+  blurb: 从搭环境、写第一个程序讲起，到函数、文件与面向对象，再用 NumPy、pandas 做数据处理和 AI 综合项目。
+  res: [book, anim, quiz, lab]
+- id: cloud
+  no: 12
+  name: 云计算及应用
+  group: base
+  status: online
+  url: https://mingzifu9.github.io/cloud-computing/
+  repo: https://github.com/MingziFu9/cloud-computing
+  chapters: 5
+  blurb: 与国家开放大学出版社 2026 年版纸质教材配套，从云计算基础、虚拟化与容器讲到云平台工具和应用实践。
+  res: [book, anim, quiz, lab]
+- id: network
+  no: 13
+  name: 计算机网络
+  group: base
+  status: online
+  url: https://mingzifu9.github.io/computer-network/
+  repo: https://github.com/MingziFu9/computer-network
+  chapters: 12
+  blurb: 零基础起步，从分层协议、以太网与 IP 地址讲到路由、TCP/UDP 和网络安全，每章 3 个动手实验，贯穿一个组网项目。
+  res: [book, anim, quiz, lab]
+- id: database
+  no: 14
+  name: 数据库基础与应用
+  group: base
+  status: online
+  url: https://mingzifu9.github.io/database-textbook/
+  repo: https://github.com/MingziFu9/database-textbook
+  chapters: 12
+  blurb: 零基础友好，以 MySQL 为主线，从关系模型、SQL 查询讲到数据库设计、事务与向量数据库，网页里可直接运行 SQL。
+  res: [book, anim, quiz, lab]
+- id: linux
+  no: 15
+  name: Linux 操作系统
+  group: base
+  status: online
+  url: https://mingzifu9.github.io/linux-os/
+  repo: https://github.com/MingziFu9/linux-os
+  chapters: 10
+  blurb: 零基础起步，以 Ubuntu 24.04 为主线、openEuler 对照，从命令行、权限讲到服务、网络与 Shell 脚本，附 HCIA-openEuler 考点对照。
+  res: [book, anim, quiz, lab]
+- id: ai-intro
+  no: 16
+  name: 人工智能导论
+  group: core
+  status: online
+  url: https://mingzifu9.github.io/ai-intro/
+  repo: https://github.com/MingziFu9/ai-intro
+  chapters: 9
+  blurb: 从搜索与知识表示讲起，覆盖机器学习、深度学习、大模型、计算机视觉、语音与 AI 伦理法规。
+  res: [book, anim, quiz]
+- id: framework
+  no: 17
+  name: 人工智能开发框架技术
+  group: core
+  status: online
+  url: https://mingzifu9.github.io/ai-frameworks/
+  repo: https://github.com/MingziFu9/ai-frameworks
+  chapters: 12
+  blurb: 零基础友好，从调用现成模型、搭建与训练神经网络、迁移学习，到图像、文本、语音应用和模型部署。
+  res: [book, anim, quiz, lab]
+- id: nlp
+  no: 18
+  name: 自然语言处理
+  group: core
+  status: online
+  url: https://elibwudi.github.io/nlp-textbook/
+  repo: https://github.com/elibwudi/nlp-textbook
+  chapters: 12
+  blurb: 从文本预处理、分词与文本表示，到 Transformer、预训练大模型、问答系统与 RAG。
+  res: [book, lab]
+- id: ml
+  no: 19
+  name: 机器学习
+  group: core
+  status: online
+  url: https://mingzifu9.github.io/ml-textbook/
+  repo: https://github.com/mingzifu9/ml-textbook
+  chapters: 12
+  blurb: 从数据预处理与特征工程，到经典算法、模型调优部署，再到神经网络入门。
+  res: [book, anim, quiz, lab]
+- id: bigdata
+  no: 20
+  name: 大数据技术处理技术
+  group: core
+  status: online
+  url: https://mingzifu9.github.io/bigdata-textbook/
+  repo: https://github.com/MingziFu9/bigdata-textbook
+  chapters: 12
+  blurb: 从 HDFS、MapReduce 与 Hive，到 Spark 数据清洗与分析、Kafka 实时处理和 MLlib 机器学习应用。
+  res: [book, anim, quiz, lab]
+- id: data-analysis
+  no: 21
+  name: 人工智能数据分析与处理
+  group: core
+  status: online
+  url: https://mingzifu9.github.io/ai-data-analysis/
+  repo: https://github.com/MingziFu9/ai-data-analysis
+  chapters: 12
+  blurb: 零基础友好，从 pandas 数据处理、采集清洗与数据标注，到可视化分析、建模应用和推荐系统。
+  res: [book, anim, quiz, lab]
+- id: deep-learning
+  no: 22
+  name: 神经网络与深度学习
+  group: core
+  status: online
+  url: https://mingzifu9.github.io/dl-textbook/
+  repo: https://github.com/MingziFu9/dl-textbook
+  chapters: 10
+  blurb: 从一个神经元讲起，到反向传播、CNN、RNN 与 Transformer，再到迁移学习和生成模型，配 27 个 PyTorch 动手实验。
+  res: [book, anim, quiz, lab]
+- id: crawler
+  no: 24
+  name: 网络爬虫技术
+  group: ext
+  status: online
+  url: https://minssnail.github.io/crawbug/
+  repo: https://github.com/Minssnail/crawbug
+  chapters: 12
+  blurb: 从合规采集、动态网页解析到 Scrapy 框架，再到面向大模型与 RAG 的语料工程。
+  res: [book, anim, quiz, lab]
+- id: cv
+  no: 25
+  name: 计算机视觉及应用实战
+  group: ext
+  status: online
+  url: https://mingzifu9.github.io/cv-textbook/
+  repo: https://github.com/MingziFu9/cv-textbook
+  chapters: 9
+  blurb: 从 OpenCV 图像处理、图像分类，到目标检测、图像分割、视频分析与 Stable Diffusion 生成式视觉。
+  res: [book, anim, quiz, lab]
+- id: speech
+  no: 26
+  name: TTS、STT 与语音克隆的理论与应用
+  group: ext
+  status: online
+  url: https://mingzifu9.github.io/speech-textbook/
+  repo: https://github.com/MingziFu9/speech-textbook
+  chapters: 9
+  blurb: 从数字声音讲起，覆盖语音识别、语音合成、声纹识别与语音克隆，36 个实验大多在普通电脑 CPU 上离线完成。
+  res: [book, anim, quiz, lab]
+- id: agentic
+  no: 23
+  name: 智能体编程
+  group: ext
+  status: online
+  url: https://mingzifu9.github.io/agentic-programming/index.html
+  repo: https://github.com/mingzifu9/agentic-programming
+  chapters: 13
+  blurb: 从提示词工程、工具调用与 MCP、检索增强生成，到记忆系统和多智能体实战，中英双语。
+  res: [book, anim, quiz]

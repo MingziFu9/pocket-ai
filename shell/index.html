@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>口袋 AI 课</title>
+<meta name="description" content="广州开放大学人工智能教学团队开源课程，手机随时学，可离线。">
+<meta name="theme-color" content="#183078">
+<link rel="manifest" href="__BASE__manifest.webmanifest">
+<link rel="icon" href="__BASE__icons/icon-192.png">
+<link rel="apple-touch-icon" href="__BASE__icons/icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="口袋 AI 课">
+<link rel="stylesheet" href="__BASE__app.css">
+</head>
+<body>
+<header class="top">
+  <div class="brand">
+    <img src="__BASE__icons/icon-192.png" alt="" width="36" height="36">
+    <div>
+      <h1>口袋 AI 课</h1>
+      <p>广州开放大学人工智能教学团队 · 开源课程</p>
+    </div>
+  </div>
+  <span id="net" class="net" hidden>离线中</span>
+</header>
+
+<div id="wechat" class="notice" hidden>
+  当前在微信里打开，无法安装和离线使用。请点右上角 <b>···</b>，选择 <b>在浏览器打开</b>。
+</div>
+<div id="install" class="notice notice-soft" hidden>
+  <span id="install-text">把「口袋 AI 课」安装到手机桌面，用起来像 APP，也能离线学习。</span>
+  <button id="install-btn" class="btn btn-primary" hidden>安装到桌面</button>
+</div>
+
+<main>
+  <section id="resume" class="resume" hidden>
+    <div class="resume-label">继续阅读</div>
+    <a id="resume-link" href="#">
+      <span id="resume-course"></span>
+      <strong id="resume-title"></strong>
+    </a>
+  </section>
+
+  <div id="groups"><p class="muted pad">正在加载课程…</p></div>
+
+  <section class="storage">
+    <div id="storage-text" class="muted"></div>
+  </section>
+</main>
+
+<footer class="foot">
+  <p>课程内容来自各课程开源仓库，每日自动同步。实验代码、课件和 PDF 请到课程仓库获取。</p>
+  <p id="built" class="muted"></p>
+</footer>
+
+<template id="card-tpl">
+  <article class="card">
+    <div class="card-head">
+      <h3 class="card-name"></h3>
+      <span class="badge"></span>
+    </div>
+    <p class="card-blurb"></p>
+    <div class="tags"></div>
+    <div class="card-meta muted"></div>
+    <div class="progress" hidden><div class="bar"></div></div>
+    <div class="actions">
+      <a class="btn btn-primary act-open">进入课程</a>
+      <button class="btn act-dl" type="button">下载离线</button>
+      <button class="btn act-update" type="button" hidden>更新</button>
+      <button class="btn btn-ghost act-del" type="button" hidden>删除离线</button>
+    </div>
+  </article>
+</template>
+
+<script src="__BASE__app.js" defer></script>
+</body>
+</html>
