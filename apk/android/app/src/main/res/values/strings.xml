@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">口袋 AI 课</string>
+    <string name="title_activity_main">口袋 AI 课</string>
+    <string name="package_name">io.github.mingzifu9.pocketai</string>
+    <string name="custom_url_scheme">io.github.mingzifu9.pocketai</string>
+</resources>

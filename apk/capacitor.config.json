@@ -1,0 +1,12 @@
+{
+  "appId": "io.github.mingzifu9.pocketai",
+  "appName": "口袋 AI 课",
+  "webDir": "../dist",
+  "android": {
+    "allowMixedContent": false,
+    "webContentsDebuggingEnabled": false
+  },
+  "server": {
+    "androidScheme": "https"
+  }
+}

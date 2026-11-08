@@ -53,15 +53,20 @@ def run(cmd, cwd=None, timeout=900):
 def fetch_vendor(out: Path):
     """用 npm pack 取 MathJax 和 Mermaid，放到 out/vendor/。"""
     vend = out / "vendor"
-    if (vend / "mathjax" / "tex-mml-chtml.js").exists() and (vend / "mermaid" / "mermaid.min.js").exists():
+    if (vend / "mathjax" / "input" / "tex" / "extensions").exists() and (vend / "mermaid" / "mermaid.min.js").exists():
         return
     with tempfile.TemporaryDirectory() as td:
         run(["npm", "pack", f"mathjax@{MATHJAX_VER}", f"mermaid@{MERMAID_VER}"], cwd=td)
         with tarfile.open(Path(td) / f"mathjax-{MATHJAX_VER}.tgz") as t:
             for m in t.getmembers():
-                if m.name == "package/es5/tex-mml-chtml.js" or m.name.startswith("package/es5/output/chtml/fonts/woff-v2/"):
-                    m.name = m.name.replace("package/es5/", "")
-                    t.extract(m, vend / "mathjax", filter="data")
+                # 整个 es5 目录（含按需加载的 TeX 扩展、菜单、无障碍组件），只排除用不到的其他组合包和 SVG 输出
+                rel = m.name[len("package/es5/"):] if m.name.startswith("package/es5/") else None
+                if not rel or not m.isfile():
+                    continue
+                if ("/" not in rel and rel != "tex-mml-chtml.js") or rel.startswith("output/svg"):
+                    continue
+                m.name = rel
+                t.extract(m, vend / "mathjax", filter="data")
         with tarfile.open(Path(td) / f"mermaid-{MERMAID_VER}.tgz") as t:
             m = t.getmember("package/dist/mermaid.min.js")
             m.name = "mermaid.min.js"
@@ -81,13 +86,43 @@ def build_course(c, work: Path, dest: Path, mkdocs_bin: str):
     return sha
 
 
+JUDGE_NO_OPTIONS = re.compile(r'(<div class="quiz quiz-judge" data-answer="[√×]"[^>]*>)((?:(?!<li|</div>).)*?)(</div>)', re.S)
+IFRAME_SRC = re.compile(r'(<iframe[^>]+src=")([^"#?:]+)(")')
+
+
+def fix_known_problems(p: Path, s: str, fixes: dict):
+    """修两类课程源码里的显示问题（不改文字内容），并计数，构建日志里会列出来，方便转告课程作者：
+    1. 判断题没写“√ 正确 / × 错误”选项，导致无法点选作答：补上和其他课程相同的两个选项；
+    2. 正文里嵌入的交互动画 iframe 路径少了一级 ../，显示为 404：改成实际存在的路径。"""
+    def judge(m):
+        fixes["判断题补选项"] = fixes.get("判断题补选项", 0) + 1
+        return m.group(1) + m.group(2) + "<ul><li>√ 正确</li><li>× 错误</li></ul>" + m.group(3)
+    s = JUDGE_NO_OPTIONS.sub(judge, s)
+
+    def iframe(m):
+        src = m.group(2)
+        if src.startswith("/"):
+            return m.group(0)
+        target = (p.parent / src).resolve()
+        if target.exists():
+            return m.group(0)
+        if (p.parent / ("../" + src)).resolve().exists():
+            fixes["动画嵌入路径"] = fixes.get("动画嵌入路径", 0) + 1
+            return m.group(1) + "../" + src + m.group(3)
+        fixes["动画嵌入路径（无法自动修复）"] = fixes.get("动画嵌入路径（无法自动修复）", 0) + 1
+        return m.group(0)
+    return IFRAME_SRC.sub(iframe, s)
+
+
 def localize(site: Path, base: str, slug: str, name: str):
-    """去外链、注入 bridge.js。"""
+    """去外链、修显示问题、注入 bridge.js。返回修复计数。"""
+    fixes = {}
     for p in site.rglob("*.map"):
         p.unlink()
     for p in site.rglob("*.html"):
         s = p.read_text(encoding="utf-8", errors="replace")
         s2 = GOOGLE_FONT_LINK.sub("", s)
+        s2 = fix_known_problems(p, s2, fixes)
         s2 = MATHJAX_CDN.sub(base + "vendor/mathjax/", s2)
         # 只给 MkDocs 生成的页面注入（交互动画的 main.html 是独立页面，常被 iframe 嵌入，不注入）
         is_mkdocs = 'name="generator" content="mkdocs' in s2
@@ -101,6 +136,7 @@ def localize(site: Path, base: str, slug: str, name: str):
         s = p.read_text(encoding="utf-8", errors="replace")
         if "unpkg.com/mermaid" in s:
             p.write_text(MERMAID_CDN.sub(base + "vendor/mermaid/mermaid.min.js", s), encoding="utf-8")
+    return fixes
 
 
 def file_list(site: Path):
@@ -158,19 +194,24 @@ def main():
             t0 = time.time()
             try:
                 sha = build_course(c, work, dest, args.mkdocs)
-                localize(dest, base, c["id"], c["name"])
+                fixes = localize(dest, base, c["id"], c["name"])
                 files, total = file_list(dest)
                 (dest / "offline.json").write_text(json.dumps(
                     {"id": c["id"], "version": sha[:12], "bytes": total, "files": files},
                     ensure_ascii=False), encoding="utf-8")
                 entry.update(offline=True, version=sha[:12], bytes=total, files=len(files))
-                log(f"  ✓ {c['name']}  {total/1048576:.1f} MB  {len(files)} 个文件  {time.time()-t0:.0f}s")
+                if fixes:
+                    entry["fixes"] = fixes
+                fx = "  修复：" + "，".join(f"{k} {v} 处" for k, v in fixes.items()) if fixes else ""
+                log(f"  ✓ {c['name']}  {total/1048576:.1f} MB  {len(files)} 个文件  {time.time()-t0:.0f}s{fx}")
             except Exception as e:  # noqa: BLE001
                 out_txt = getattr(e, "stdout", "") or str(e)
                 failed.append(c["name"])
                 log(f"  ✗ {c['name']} 构建失败，APP 里改为仅在线：\n{out_txt[-1500:]}")
         catalog["courses"].append(entry)
 
+    if os.environ.get("APP_VERSION_CODE"):
+        catalog["appVersionCode"] = int(os.environ["APP_VERSION_CODE"])
     catalog["vendor"] = {"files": ["vendor/" + f for f in vendor_files], "bytes": vendor_bytes}
 
     # 复制外壳

@@ -12,18 +12,26 @@
   function $(s, el) { return (el || document).querySelector(s); }
 
   var catalog = null;
+  // 在安卓 APP（Capacitor）里运行时，课程全部内置在安装包中，不需要下载离线
+  var isApp = !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
+  var RELEASES_API = "https://api.github.com/repos/MingziFu9/pocket-ai/releases/latest";
+  if (isApp) {
+    document.documentElement.classList.add("in-app");
+    var AppPlugin = window.Capacitor.Plugins && window.Capacitor.Plugins.App;
+    if (AppPlugin) AppPlugin.addListener("backButton", function (e) { if (e.canGoBack) history.back(); else AppPlugin.exitApp(); });
+  }
 
   // ---------- 环境提示 ----------
   var ua = navigator.userAgent;
   var inWeChat = /MicroMessenger/i.test(ua);
   var standalone = window.matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
-  if (inWeChat) $("#wechat").hidden = false;
+  if (inWeChat && !isApp) $("#wechat").hidden = false;
 
   var deferredPrompt = null;
   window.addEventListener("beforeinstallprompt", function (e) {
     e.preventDefault();
     deferredPrompt = e;
-    if (!inWeChat && !standalone) { $("#install").hidden = false; $("#install-btn").hidden = false; }
+    if (!inWeChat && !standalone && !isApp) { $("#install").hidden = false; $("#install-btn").hidden = false; }
   });
   $("#install-btn").addEventListener("click", function () {
     if (!deferredPrompt) return;
@@ -31,7 +39,7 @@
     deferredPrompt.userChoice.finally(function () { deferredPrompt = null; $("#install").hidden = true; });
   });
   var isIOS = /iPhone|iPad|iPod/i.test(ua);
-  if (isIOS && !standalone && !inWeChat) {
+  if (isIOS && !standalone && !inWeChat && !isApp) {
     $("#install-text").textContent = "在 Safari 里点底部「分享」→「添加到主屏幕」，即可像 APP 一样使用；不添加的话，iPhone 可能会自动清掉离线内容。";
     $("#install").hidden = false;
   }
@@ -42,7 +50,7 @@
   updateNet();
 
   // ---------- Service Worker ----------
-  if ("serviceWorker" in navigator) {
+  if ("serviceWorker" in navigator && !isApp) {
     navigator.serviceWorker.register(BASE + "sw.js", { scope: BASE }).catch(function (e) { console.warn("SW 注册失败", e); });
   }
 
@@ -136,8 +144,11 @@
     var dl = $(".act-dl", card), up = $(".act-update", card), del = $(".act-del", card);
     var meta = [];
     if (c.chapters) meta.push(c.chapters + " 章");
-    if (c.offline && c.bytes) meta.push("离线约 " + mb(c.bytes));
-    if (!c.offline) {
+    if (c.offline && c.bytes && !isApp) meta.push("离线约 " + mb(c.bytes));
+    if (isApp && c.offline) {
+      badge.textContent = "已内置"; badge.className = "badge ok";
+      dl.hidden = true; up.hidden = true; del.hidden = true;
+    } else if (!c.offline) {
       badge.textContent = "仅在线"; badge.className = "badge";
       dl.hidden = true; up.hidden = true; del.hidden = true;
     } else if (off && off.version === c.version) {
@@ -193,6 +204,7 @@
   async function showStorage() {
     var off = load(KEY_OFF, {});
     var ids = Object.keys(off);
+    if (isApp) { $("#storage-text").textContent = "全部课程已内置在 APP 中，无需联网即可学习。"; return; }
     var t = ids.length ? "已离线 " + ids.length + " 门课，约 " + mb(ids.reduce(function (s, k) { return s + (off[k].bytes || 0); }, 0)) + "。" : "还没有下载离线课程。";
     if (navigator.storage && navigator.storage.estimate) {
       try {
@@ -201,6 +213,30 @@
       } catch (e) {}
     }
     $("#storage-text").textContent = t;
+  }
+
+  // APP 内：有新版时提示下载；安卓浏览器：提示可以下载安卓 APP
+  async function checkRelease() {
+    var isAndroid = /Android/i.test(ua);
+    if (!isApp && (!isAndroid || inWeChat)) return;
+    try {
+      var r = await fetch(RELEASES_API, { cache: "no-cache" });
+      if (!r.ok) return;
+      var rel = await r.json();
+      var m = /(\d+)$/.exec(rel.tag_name || "");
+      if (!m) return;
+      var latest = parseInt(m[1], 10);
+      var link = rel.html_url;
+      if (isApp) {
+        if (!catalog.appVersionCode || latest <= catalog.appVersionCode) return;
+        $("#install-text").textContent = "「口袋 AI 课」有新版本（" + (rel.name || rel.tag_name) + "），课程内容已更新。";
+      } else {
+        $("#install-text").textContent = "也可以下载安卓 APP，全部课程内置，装好即可断网学习（约 90 MB）。";
+      }
+      var a = $("#apk-link");
+      a.href = link; a.hidden = false;
+      $("#install").hidden = false;
+    } catch (e) {}
   }
 
   async function init() {
@@ -214,6 +250,7 @@
     }
     render();
     showStorage();
+    checkRelease();
   }
   init();
 })();

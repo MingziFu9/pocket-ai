@@ -1,0 +1,12 @@
+{
+  "name": "pocket-ai-apk",
+  "private": true,
+  "version": "1.0.0",
+  "description": "口袋 AI 课安卓 APP（Capacitor 外壳）",
+  "dependencies": {
+    "@capacitor/android": "8.6.0",
+    "@capacitor/app": "8.1.2",
+    "@capacitor/cli": "8.6.0",
+    "@capacitor/core": "8.6.0"
+  }
+}

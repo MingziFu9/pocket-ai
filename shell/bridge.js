@@ -15,6 +15,12 @@
     }));
   } catch (e) {}
 
+  // 安卓 APP 内：返回键先回上一页，回到头再退出
+  var C = window.Capacitor;
+  if (C && C.isNativePlatform && C.isNativePlatform() && C.Plugins && C.Plugins.App) {
+    C.Plugins.App.addListener("backButton", function (e) { if (e.canGoBack) history.back(); else C.Plugins.App.exitApp(); });
+  }
+
   var a = document.createElement("a");
   a.href = base;
   a.textContent = "口袋 AI 课";

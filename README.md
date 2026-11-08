@@ -32,6 +32,9 @@ python scripts/build.py --base /pocket-ai/ --out dist
 - 删除 Google 字体引用（国内加载慢、离线不可用），改用系统字体。
 - MathJax（原来走 jsDelivr）和 Mermaid（原来走 unpkg）换成 `vendor/` 下的本地副本。
 - 删除 `.map` 调试文件。
+- 修两类课程源码里的显示问题（不改文字内容），构建日志会列出每门课修了几处，方便转告课程作者在源仓库里改：
+  - 判断题没写“√ 正确 / × 错误”选项、无法点选作答的，补上这两个选项；
+  - 正文嵌入交互动画的 iframe 路径少一级 `../`、显示 404 的，改成正确路径。
 - 在每个课程页面加一个“口袋 AI 课”返回按钮，并记录阅读位置。
 - 每门课生成 `offline.json`（文件清单、大小、版本 = 仓库最新提交前 12 位）。
 
@@ -40,3 +43,13 @@ python scripts/build.py --base /pocket-ai/ --out dist
 ## 新增课程
 
 在 `data/courses.yaml` 里加一条（`status: online`，填 `id`、`name`、`group`、`url`、`repo` 等），推送即可。
+
+## 安卓 APK
+
+`apk/` 是 Capacitor 安卓外壳，17 门课全部内置在安装包里（约 90 MB），装好可断网使用。
+
+- 出包：Actions 里手动运行「打包安卓 APK」，或每周一北京时间 04:00 自动出包，发布到本仓库 Releases（tag `apk-v1.0.<序号>`）。
+- 出包前自动执行 `scripts/offline-check.js`：断网逐个打开全部交互动画、所有题目页（每种题型点一题）、Python/SQL“试一试”，有一项失败就不出包。
+- 签名：需要在 Settings → Secrets 配置 `ANDROID_KEYSTORE_BASE64`、`ANDROID_KEYSTORE_PASSWORD`、`ANDROID_KEY_ALIAS`、`ANDROID_KEY_PASSWORD`。密钥务必另行备份，丢失后学生无法覆盖升级。
+- APP 内会联网查询最新 Release，有新版时提示下载；安卓浏览器打开网页版时会提示可下载 APP。
+- 包名 `io.github.mingzifu9.pocketai`，发布后不要再改。

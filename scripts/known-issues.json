@@ -1,0 +1,7 @@
+[
+  {
+    "url": "/courses/",
+    "error": "reading 'replaceChild'",
+    "note": "MathJax 偶发的重复排版报错（课程 mathjax.js 与页面加载时序有关），公式仍正常显示。2026-11-08 登记。"
+  }
+]
