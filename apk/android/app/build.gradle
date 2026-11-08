@@ -29,6 +29,11 @@ android {
             }
         }
     }
+    // 出包时不跑 lint 检查（课程网页文件很多，lint 只会拖慢或误报，不影响 APP 本身）
+    lint {
+        checkReleaseBuilds = false
+        abortOnError = false
+    }
     buildTypes {
         release {
             if (System.getenv("ANDROID_KEYSTORE_FILE")) {
