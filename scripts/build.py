@@ -119,6 +119,9 @@ def localize(site: Path, base: str, slug: str, name: str):
     fixes = {}
     for p in site.rglob("*.map"):
         p.unlink()
+    # sitemap.xml.gz 用不到；安卓打包会把 x.gz 当成 x 的压缩版，和 sitemap.xml 重名导致出包失败
+    for p in site.rglob("*.gz"):
+        p.unlink()
     for p in site.rglob("*.html"):
         s = p.read_text(encoding="utf-8", errors="replace")
         s2 = GOOGLE_FONT_LINK.sub("", s)
